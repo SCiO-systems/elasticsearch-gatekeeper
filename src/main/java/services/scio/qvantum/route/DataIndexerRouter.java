@@ -33,7 +33,6 @@ public class DataIndexerRouter extends RouteBuilder {
                 .process(new ExceptionHandler())
                 .to("log:?level=ERROR&showAll=true&showCaughtException=true");
 
-
         from("kafka:{{KAFKA_INPUT_TOPIC}}?brokers={{KAFKA_BROKER}}" +
                 "&autoOffsetReset&breakOnFirstError=false")
                 .routeId("DataIndexer")

@@ -3,6 +3,7 @@ package services.scio.qvantum.aggregator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.camel.AggregationStrategy;
+import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -18,20 +19,19 @@ import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import services.scio.qvantum.models.DocumentMap;
+import services.scio.qvantum.models.IndexInfo;
 
 import java.io.IOException;
 
 public class ElasticBatchAggregationStrategy implements AggregationStrategy {
 
-    private String indexName;
-
-    public ElasticBatchAggregationStrategy (String index) {this.indexName = index;}
-
 
     @Override
     public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
 
-        String indexName = this.indexName;
+        CamelContext context = newExchange.getContext();
+        String indexName = context.getRegistry().lookupByNameAndType("indexName", String.class);
+        IndexInfo info = context.getRegistry().lookupByNameAndType("indexInfo", IndexInfo.class);
         DocumentMap document = newExchange.getIn().getBody(DocumentMap.class);
         IndexRequest indexRequest = new IndexRequest(indexName);
         ObjectMapper mapper = new ObjectMapper();
@@ -47,6 +47,7 @@ public class ElasticBatchAggregationStrategy implements AggregationStrategy {
         }else{
             bulkRequest = oldExchange.getIn().getBody(BulkRequest.class);
         }
+//        System.out.println("In aggregation got " + info.toString());
 
         bulkRequest.add(indexRequest);
         newExchange.getIn().setBody(bulkRequest,BulkRequest.class);

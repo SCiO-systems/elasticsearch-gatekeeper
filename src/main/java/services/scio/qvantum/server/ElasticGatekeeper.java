@@ -82,7 +82,7 @@ public class ElasticGatekeeper extends Main {
 
         //camelContext.addRoutes(new CreateGardianAliasRouter("http://prod.elasticsearch.scio.services:9200", gardianEsIndexRouter.getIndexName()));
 //        camelContext.addRoutes(new DataIndexerRouter(esConnectionString, gardianEsIndexRouter.getIndexName()));
-        camelContext.addRoutes(new DataIndexerRouter(esConnectionString, "test4-index"));
+        camelContext.addRoutes(new DataIndexerRouter());
 
         camelContext.start();
         gatekeeperIndex.run();

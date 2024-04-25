@@ -5,19 +5,14 @@ import services.scio.qvantum.aggregator.ElasticBatchAggregationStrategy;
 import services.scio.qvantum.exceptions.ExceptionHandler;
 import services.scio.qvantum.exceptions.HttpOperationFailedExceptionHandler;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.mongodb.MongoDbConstants;
 import org.apache.camel.http.base.HttpOperationFailedException;
 import services.scio.qvantum.models.DocumentMap;
 import services.scio.qvantum.process.ESIndexDataProcessor;
+import services.scio.qvantum.process.GetOrCreateIndex;
 
 public class DataIndexerRouter extends RouteBuilder {
 
-    private final String esConnectionString;
-    private final String indexName;
-
-    public DataIndexerRouter(String esConnectionString, String indexName) {
-        this.esConnectionString = esConnectionString;
-        this.indexName = indexName;
+    public DataIndexerRouter() {
     }
 
     @Override
@@ -37,10 +32,11 @@ public class DataIndexerRouter extends RouteBuilder {
                 "&autoOffsetReset&breakOnFirstError=false")
                 .routeId("DataIndexer")
                 .unmarshal().json(JsonLibrary.Jackson, DocumentMap.class)
-                .aggregate(constant(true), new ElasticBatchAggregationStrategy(indexName))
+                .process(new GetOrCreateIndex())
+                .aggregate(constant(true), new ElasticBatchAggregationStrategy())
                 .completionSize(3)
                 .completionTimeout(60000)
-                .process(new ESIndexDataProcessor(indexName))
+                .process(new ESIndexDataProcessor())
                 .log("End of batch data integration...");
 
     }

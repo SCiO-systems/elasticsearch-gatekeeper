@@ -34,8 +34,8 @@ public class DataIndexerRouter extends RouteBuilder {
                 .unmarshal().json(JsonLibrary.Jackson, DocumentMap.class)
                 .process(new GetOrCreateIndex())
                 .aggregate(constant(true), new ElasticBatchAggregationStrategy())
-                .completionSize(3)
-                .completionTimeout(60000)
+                .completionSize(10000)
+                .completionTimeout(300000)
                 .process(new ESIndexDataProcessor())
                 .log("End of batch data integration...");
 

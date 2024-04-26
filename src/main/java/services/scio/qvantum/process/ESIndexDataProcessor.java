@@ -34,7 +34,8 @@ public class ESIndexDataProcessor implements Processor {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String formattedTimestamp = sdf.format(new Date(timestamp));
-        System.out.println("Formatted Timestamp: " + formattedTimestamp);
+        //ΤΟ DO this timestamp will be useful for the alias update in last message
+//        System.out.println("Formatted Timestamp: " + formattedTimestamp);
 
         try {
             client.bulk(bulkRequest, RequestOptions.DEFAULT);
